@@ -1,0 +1,249 @@
+/**
+ * \file Source.cpp
+ * \brief Описание работы всех функций для использования их в основной программе.
+ * \details Этот файл содержит описание всех функций, используемых в основной программе.
+ * \author Миронов Е.С, КТбо1-6
+ * \date 26.05.2024
+ */
+
+#include "Header.h"
+#include <iostream>
+#include <fstream>
+#include <windows.h>
+#include <tuple>
+#include <map>
+
+using namespace std;
+
+/**
+ * \fn bool checkup(string str, set<char>&alf)
+ * \brief Проверяет входную строку на соответствие допустимому алфавиту.
+ *
+ * \param str Входная строка.
+ * \param alf Допустимый алфавит.
+ * \return true Если в строке есть символы, не входящие в алфавит.
+ * \return false Если все символы строки принадлежат алфавиту.
+ */
+extern "C" __declspec(dllexport) bool checkup(string str, set<char>&alf) {
+    for (char sym : str) {
+        if (alf.count(sym)) {
+            continue;
+        }
+        else {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
+ * \fn string addsymbols(string & str)
+ * \brief Добавляет пробелы в начале и в конце строки, если их нет.
+ *
+ * \param str Ссылка на входную строку.
+ * \return string Измененная строка.
+ */
+extern "C" __declspec(dllexport) string addsymbols(string & str) {
+    if (str[0] != ' ') {
+        str = ' ' + str;
+    }
+    if (str.back() != ' ') {
+        str = str + ' ';
+    }
+    return str;
+}
+
+/**
+ * \fn bool init(Transition&table)
+ * \brief Инициализирует таблицу переходов для машины Тьюринга.
+ *
+ * \param table Ссылка на таблицу переходов.
+ * \return true Если файл не удалось открыть.
+ * \return false Если инициализация прошла успешно.
+ */
+extern "C" __declspec(dllexport) bool init(Transition & table) {
+    vector<char> alfavit = { '0', '1', '2', '3', '4', '5', '6', '7', '#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', ' ' };
+    ifstream inputFile("TXT_FILE_FOR_PIOTA.txt");
+    if (!inputFile) {
+        cerr << "Файл не удалось открыть!" << endl;
+        cerr << "Проверьте имя и расширение файла, после запустите программу заново";
+        return true;
+    }
+    else {
+        map<pair <string, char>, tuple <char, char, string>> instance, temp;
+        auto& commands = table.commands;
+        for (int i = 1; i < 31; i++) {
+            int cntForAlfavit = 0, flagForSpace = 0, flagForBreak = 0;
+            string inputStr;
+            getline(inputFile, inputStr);
+            int lenForInputStr = inputStr.length();
+            for (int j = 0; j < lenForInputStr; j++) {
+                if (inputStr[j] == 'N') {
+                    cntForAlfavit++;
+                    flagForSpace = 1;
+                    continue;
+                }
+                else if (flagForSpace) {
+                    flagForSpace = 0;
+                    continue;
+                }
+                else if ((inputStr[j] == '<' or inputStr[j] == '>') and inputStr[j + 2] != 'q') {
+                    auto key = make_pair('q' + to_string(i), alfavit[cntForAlfavit]);
+                    instance[key] = make_tuple(' ', inputStr[j], " ");
+                    cntForAlfavit++;
+                    flagForSpace = 1;
+                    table.commands.push_back(instance);
+                    instance = temp;
+                }
+                else if (inputStr[j] != '<' and inputStr[j] != '>' and inputStr[j + 4] == 'q') {
+                    auto key = make_pair('q' + to_string(i), alfavit[cntForAlfavit]);
+                    instance[key] = make_tuple(inputStr[j], inputStr[j + 2], " ");
+                    if ((j + 6) <= (lenForInputStr - 1) and isdigit(inputStr[j + 6])) {
+                        instance[key] = make_tuple(inputStr[j], inputStr[j + 2],
+                            "q" + to_string(inputStr[j + 5] - '0') + to_string(inputStr[j + 6] - '0'));
+                        if ((j + 6) == lenForInputStr - 1) {
+                            flagForBreak = 1;
+                        }
+                    }
+                    else {
+                        instance[key] = make_tuple(inputStr[j], inputStr[j + 2], "q" + to_string(inputStr[j + 5] - '0'));
+                        if ((j + 5) == lenForInputStr - 1) {
+                            flagForBreak = 1;
+                        }
+                    }
+                    table.commands.push_back(instance);
+                    instance = temp;
+                    cntForAlfavit++;
+                    flagForSpace = 1;
+                    if (flagForBreak) {
+                        break;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+}
+
+/**
+ * \fn void turing(string & str, Transition& table)
+ * \brief Выполняет алгоритм машины Тьюринга на входной строке.
+ *
+ * \param str Ссылка на входную строку.
+ * \param table Ссылка на таблицу переходов.
+ */
+extern "C" __declspec(dllexport) void turing(string & str, Transition & table) {
+    int cnt = 0;
+    table.nowCondition = "q1";
+    table.lenta = str;
+    cout << table.lenta[0];
+    setColor(4);
+    cout << str[1];
+    setColor(7);
+    for (auto it = table.lenta.begin() + 2; it != table.lenta.end(); it++) {
+        cout << *it;
+    }
+    cout << ' ' << table.nowCondition << endl;
+    table.indexForNowSym = 1;
+    while (table.nowCondition != "q0") {
+        table.nowCondition = oneStep(table);
+        cnt++;
+        if (cnt == 10000) {
+            cout << "Превышено максимальное количество шагов машины Тьюринга (10000)" << endl;
+            table.nowCondition = "q0";
+        }
+    }
+    cout << "Машина Тьюринга закончила свое выполнение" << endl;
+}
+
+/**
+ * \fn auto findCommand(Transition& table)
+ * \brief Поиск команды в таблице переходов по текущему состоянию и символу на ленте.
+ *
+ * \param table Ссылка на таблицу переходов.
+ * \return tuple Кортеж из символов и состояния.
+ */
+extern "C" __declspec(dllexport) auto findCommand(Transition & table) {
+    pair <string, char> key = make_pair(table.nowCondition, table.lenta[table.indexForNowSym]);
+    for (const auto& commandsMap : table.commands) {
+        auto it = commandsMap.find(key);
+        if (it != commandsMap.end()) {
+            return it->second;
+        }
+    }
+}
+extern "C" __declspec(dllexport) void print(Transition&table) {
+    if (table.indexForNowSym == 0) {
+        setColor(4);
+        cout << table.lenta[table.indexForNowSym];
+        setColor(7);
+        for (size_t i = 1; i < table.lenta.length(); i++) {
+            cout << table.lenta[i];
+        }
+    }
+    else {
+        for (size_t i = 0; i < table.indexForNowSym; i++) {
+            cout << table.lenta[i];
+        }
+        setColor(4);
+        cout << table.lenta[table.indexForNowSym];
+        setColor(7);
+        for (size_t i = table.indexForNowSym + 1; i < table.lenta.length(); i++) {
+            cout << table.lenta[i];
+        }
+    }
+    cout << ' ' << table.nowCondition << endl;
+}
+
+/**
+ * \fn string oneStep(Transition& table)
+ * \brief Выполняет один шаг машины Тьюринга.
+ *
+ * \param table Ссылка на структуру Transition.
+ * \return string Текущее состояние.
+ */
+extern "C" __declspec(dllexport) string oneStep(Transition & table) {
+    addsymbols(table.lenta);
+    auto it = findCommand(table);
+    char firstElemInTuple = get<0>(it);
+    char secondElemInTuple = get<1>(it);
+    string thirdElemInTuple = get<2>(it);
+
+    if (thirdElemInTuple[0] == 'q') {
+        table.lenta[table.indexForNowSym] = firstElemInTuple;
+        table.nowCondition = thirdElemInTuple;
+        move(secondElemInTuple, table);
+    }
+    else if ((secondElemInTuple == '>' || secondElemInTuple == '<') && firstElemInTuple == ' ') {
+        move(secondElemInTuple, table);
+    }
+    print(table);
+    return table.nowCondition;
+}
+
+/**
+ * \fn void move(char& it, Transition& table)
+ * \brief Перемещает головку машины Тьюринга.
+ *
+ * \param it Ссылка на символ, указывающий направление движения ('>' или '<').
+ * \param table Ссылка на структуру Transition.
+ */
+extern "C" __declspec(dllexport) void move(char& it, Transition & table) {
+    if (it == '>') {
+        table.indexForNowSym++;
+    }
+    else {
+        table.indexForNowSym--;
+    }
+}
+
+/**
+ * \fn void setColor(int color)
+ * \brief Устанавливает цвет текста в консоли.
+ *
+ * \param color Код цвета.
+ */
+extern "C" __declspec(dllexport) void setColor(int color) {
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleTextAttribute(hConsole, color);
+}
