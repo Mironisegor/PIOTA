@@ -1,0 +1,113 @@
+/**
+ * \file Header.h
+ * \brief Прототипы ко всем функциям для использования их в основной программе.
+ * \details Этот файл содержит прототипы всех функций, необходимых для основной программы.
+ * \author Миронов Е.С, КТбо1-6
+ * \date 26.05.2024
+ */
+
+#pragma once
+#ifndef HEADER_H
+#define HEADER_H
+
+#include <string>
+#include <vector>
+#include <set>
+#include <map>
+#include <tuple>
+#include <deque>
+
+using namespace std;
+
+/**
+ * \struct Transition
+ * \brief Структура для хранения системы команд, текущего состояни, головки, ленты машины Тьюринга.
+ */
+typedef struct Transition {
+    string lenta; ///< Лента машины Тьюринга
+    string nowCondition; ///< Текущее состояние
+    int indexForNowSym; ///< Положение головки
+    deque <map<pair <string, char>, tuple <char, char, string>>> commands;
+} Transition;
+
+/**
+ * \fn bool checkup(string str, set<char>&alf)
+ * \brief Проверяет входную строку на соответствие допустимому алфавиту.
+ *
+ * \param str Входная строка.
+ * \param alf Допустимый алфавит.
+ * \return true Если в строке есть символы, не входящие в алфавит.
+ * \return false Если все символы строки принадлежат алфавиту.
+ */
+extern "C" __declspec(dllexport) bool checkup(string str, set<char>&alf);
+
+/**
+ * \fn string addsymbols(string & str)
+ * \brief Добавляет пробелы в начале и в конце строки, если их нет.
+ *
+ * \param str Ссылка на входную строку.
+ * \return string Измененная строка.
+ */
+extern "C" __declspec(dllexport) string addsymbols(string & str);
+
+/**
+ * \fn bool init(Transition&table)
+ * \brief Инициализирует таблицу переходов для машины Тьюринга.
+ *
+ * \param table Ссылка на структуру Transition.
+ * \return true Если файл не удалось открыть.
+ * \return false Если инициализация прошла успешно.
+ */
+extern "C" __declspec(dllexport) bool init(Transition & table);
+
+/**
+ * \fn void turing(string & str, Transition &table)
+ * \brief Выполняет алгоритм машины Тьюринга на входной строке.
+ *
+ * \param str Ссылка на входную строку.
+ * \param table Ссылка на структуру Transition.
+ */
+extern "C" __declspec(dllexport) void turing(string & str, Transition & table);
+
+/**
+ * \fn void print(Transition&table)
+ * \brief Выводит конфигурацию на экран
+ *
+ * \param table Ссылка на структуру Transition.
+ */
+extern "C" __declspec(dllexport) void print(Transition & table);
+
+/**
+ * \fn string oneStep(Transition & table)
+ * \brief Выполняет один шаг машины Тьюринга
+ * \return string Текущее состояние.
+ * \param table Ссылка на структуру Transition.
+ */
+extern "C" __declspec(dllexport) string oneStep(Transition & table);
+
+/**
+ * \fn auto findCommand(Transition & table)
+ * \brief Поиск команды в commands по ключу.
+ * \param table Ссылка на структуру Transition.
+ * \return Найденная команда.
+ */
+extern "C" __declspec(dllexport) auto findCommand(Transition & table);
+
+/**
+ * \fn void move(char& it, Transition & table)
+ * \brief Перемешает головку машины Тьюринга
+ *
+ * \param it Ссылка на таблицу переходов.
+ * \param table Ссылка на итератор найденного перехода .
+ */
+extern "C" __declspec(dllexport) void move(char& it, Transition & table);
+
+/**
+ * \fn void setColor(int color)
+ * \brief Устанавливает цвет текста в консоли.
+ *
+ * \param color Код цвета.
+ */
+extern "C" __declspec(dllexport) void setColor(int color);
+
+#endif // HEADER_H
