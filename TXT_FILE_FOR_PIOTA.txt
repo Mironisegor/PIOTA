@@ -1,0 +1,30 @@
+> > > > > > > > > > > > > > > > > # < q2
+< < < < < < < < < < < < < < < < <   > q3
+A > q4 B > q5 C > q6 D > q7 E > q8 F > q9 G > q10 H > q11 # < q30 > > > > > > > > N
+> > > > > > > > # > q12 > > > > > > > > N
+> > > > > > > > # > q16 > > > > > > > > N
+> > > > > > > > # > q20 > > > > > > > > N
+> > > > > > > > # > q25 > > > > > > > > N
+> > > > > > > > > > > > > > > > > 1 > q14
+> > > > > > > > > > > > > > > > > 1 > q18
+> > > > > > > > > > > > > > > > > 1 > q23
+> > > > > > > > > > > > > > > > > 1 > q28
+0 > q13 1 > q13 N N N N N N N N N N N N N N N 0 < q2
+> > N N N N N N N N N N N N N N N 0 > q14
+N N N N N N N N N N N N N N N N N 0 > q15
+N N N N N N N N N N N N N N N N N 0 < q2
+0 > q17 1 > q17 N N N N N N N N N N N N N N N 1 < q2
+> > N N N N N N N N N N N N N N N 0 > q18
+N N N N N N N N N N N N N N N N N 0 > q19
+N N N N N N N N N N N N N N N N N 1 < q2
+0 > q22 1 > q22 N N N N N N N N N N N N N N N 1 > q21
+N N N N N N N N N N N N N N N N N 0 < q2
+> > N N N N N N N N N N N N N N N 0 > q23
+N N N N N N N N N N N N N N N N N 1 > q24
+N N N N N N N N N N N N N N N N N 0 < q2
+0 > q27 1 > q27 N N N N N N N N N N N N N N N 1 > q26
+N N N N N N N N N N N N N N N N N 1 < q2
+> > N N N N N N N N N N N N N N N 0 > q28
+N N N N N N N N N N N N N N N N N 1 > q29
+N N N N N N N N N N N N N N N N N 1 < q2
+N N N N N N N N N 0 < q30 1 < q30 2 < q30 3 < q30 4 < q30 5 < q30 6 < q30 7 < q30   > q0
