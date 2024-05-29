@@ -1,0 +1,106 @@
+/**
+* \file ИЗ_КТбо1-6_Миронов_11.2.cpp
+* \brief Основной код программы.
+* \details
+* \author Миронов Е.С, КТбо1-6
+* \date 26.05.2024
+*/
+
+
+#include <iostream>
+#include <string>
+#include <vector>
+#include <map>
+#include <set>
+#include <fstream>
+#include <windows.h>
+#include "Header.h"
+#include <tuple>
+
+using namespace std;
+
+/**
+ * @brief Основная функция программы.
+ *
+ * Загружает динамическую библиотеку, инициализирует таблицу переходов,
+ * запрашивает ввод числа у пользователя и выполняет алгоритм Тьюринга.
+ *
+ * @return int Код завершения программы.
+ */
+int main() {
+    HINSTANCE load; ///< Хэндл для загруженной библиотеки.
+    setlocale(LC_ALL, "Russian");
+    Transition table; ///< Таблица переходов для машины Тьюринга.
+
+    load = LoadLibrary(L"DinamicLib.dll"); ///< Загрузка библиотеки.
+
+    set<char> alf = { '0', '1', '2', '3', '4', '5', '6', '7', '#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', ' ' }; ///< Входной алфавит.
+
+    /**
+     * @brief Инициализация указателей на функцию из библиотеки.
+     */
+    bool(*init)(Transition&);
+    init = (bool(*)(Transition&))GetProcAddress(load, "init");
+    /**
+     * @brief Проверка инициализации таблицы переходов.
+     * Если инициализация не удалась, программа завершится.
+     */
+    if (init(table)) {
+        return 0;
+    }
+    else {
+        /**
+         * @brief Основной цикл программы для ввода числа и выполнения алгоритма Тьюринга.
+         */
+        int flag = 1; ///< Флаг для продолжения работы программы.
+        do {
+            string str; ///< Переменная для хранения входнйо строки.
+            cout << "Введите число: ";
+            cin >> str;
+
+            /**
+            * @brief Проверка инициализации таблицы переходов.
+            * Если инициализация не удалась, программа завершится.
+            */
+            bool(*checkup)(string, set<char>&);
+            checkup = (bool(*)(string, set<char>&))GetProcAddress(load, "checkup");
+            /**
+            * @brief Проверка числа на наличие символов не из алфавита.
+            */
+            if (checkup(str, alf)) {
+                cout << "Некоректный ввод! Число должно состоять только из цифр от 0 до 7 включительно" << endl;
+                cout << "Введите 1, если хотите попробовать снова, иначе 0: ";
+                cin >> flag;
+                if (!flag) {
+                    break;
+                }
+            }
+            else {
+                /**
+                * @brief Проверка инициализации таблицы переходов.
+                * Если инициализация не удалась, программа завершится.
+                */
+                string(*addsymbols)(string&);
+                addsymbols = (string(*)(string&))GetProcAddress(load, "addsymbols");
+                str = addsymbols(str);
+                /**
+                * @brief Проверка инициализации таблицы переходов.
+                * Если инициализация не удалась, программа завершится.
+                */
+                void(*turing)(string&, Transition&);
+                turing = (void(*)(string&, Transition&))GetProcAddress(load, "turing");
+                turing(str, table);
+                cout << "Хотите ввести число еще раз? (1 - да, 0 - нет): ";
+                int flag1;
+                cin >> flag1;
+                if (!flag1) {
+                    break;
+                }
+            }
+        } while (true);
+    }
+
+    FreeLibrary(load); ///< Освобождение загруженной библиотеки.
+
+    return 0;
+}
