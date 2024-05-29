@@ -28,3 +28,6 @@ N N N N N N N N N N N N N N N N N 1 < q2
 N N N N N N N N N N N N N N N N N 1 > q29
 N N N N N N N N N N N N N N N N N 1 < q2
 N N N N N N N N N 0 < q30 1 < q30 2 < q30 3 < q30 4 < q30 5 < q30 6 < q30 7 < q30   > q0
+
+По столбцам расставлены символы алфавита
+Строки выполняют роль состояний
