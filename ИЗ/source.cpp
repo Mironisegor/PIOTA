@@ -25,14 +25,14 @@ static void setColor(int color) {
 */
 int init() {
     ifstream inputFile("TXT_FOR_PIOTA.txt");
-    vector <char> vec = { 'a', 'b', 'c', 'd', 'e', 'f', '#' , '*', '1', '!' };
+    vector <char> vec = { 'a', 'b', 'c', 'd', 'e', 'f', '#' , '*', '1', '!', '@' };
     if (!inputFile) {
         return 0;
     }
     else {
         // Здесь можно добавить логику для чтения файла и инициализации Turing
-        for (int i = 0; i < 30; i++) {
-            for (int j = 0; j < 10; j++) {
+        for (int i = 1; i < 31; i++) {
+            for (int j = 0; j < 11; j++) {
                 char s1, s2;
                 string s3;
                 inputFile >> s1;
@@ -84,15 +84,15 @@ static auto findCommand() {
  * @brief Статическая функция для добавления пробелов слева и справа.
  */
 static void addEmptySymbols() {
-    if (Turing.lenta[0] != '!') {
-        Turing.lenta = '!' + Turing.lenta;
+    if (Turing.lenta[0] != '@') {
+        Turing.lenta = '@' + Turing.lenta;
     }
-    if (Turing.lenta.back() != '!') {
-        Turing.lenta += '!';
+    if (Turing.lenta.back() != '@') {
+        Turing.lenta += '@';
     }
-    if (Turing.lenta == "!") {
-        Turing.lenta = '!' + Turing.lenta;
-        Turing.lenta += '!';
+    if (Turing.lenta == "@") {
+        Turing.lenta = '@' + Turing.lenta;
+        Turing.lenta += '@';
     }
 }
 
@@ -104,7 +104,7 @@ static void movePtr(char direction) {
     if (direction == '>') {
         Turing.indexForNowSym++;
     }
-    else {
+    else if (direction == '<') {
         Turing.indexForNowSym--;
     }
 }
